@@ -8,6 +8,7 @@ const messages = [
 
 export default function App() {
   const [step, setStep] = useState(1);
+  
 
   function handlePrevious() {
     // alert("Previous");
