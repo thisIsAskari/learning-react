@@ -8,7 +8,7 @@ const messages = [
 
 export default function App() {
   const [step, setStep] = useState(1);
-  
+  const [test, setTest] = useState({ name: "Jonas" });
 
   function handlePrevious() {
     // alert("Previous");
@@ -22,6 +22,10 @@ export default function App() {
     if (step < 3) {
       setStep((s) => s + 1);
     }
+
+    // Bad practice
+    // test.name = "Fred";
+    setTest({ name: "Fred" });
   }
 
   return (
