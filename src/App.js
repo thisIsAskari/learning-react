@@ -33,6 +33,7 @@ function Form() {
   const [quantity, setQuantity] = useState(1);
   const [items, setItems] = useState([]);
 
+  // video 80 in progress 6:30 min to continue
   function handleAddItems(item) {
     setItems((items) => [...items, item]);
   }
