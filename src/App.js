@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./styles.css";
 
 export default function App() {
-  const [bill, setBill] = useState(0);
+  const [bill, setBill] = useState("");
   const [mySatisfaction, setMySatisfaction] = useState(0);
   const [friendSatisfaction, setMyFriendSatisfaction] = useState(0);
 
@@ -13,20 +13,10 @@ export default function App() {
   //   totalBill = bill + bill * totalPerenctage;
   // }
 
-  let totalBill = 0;
-  let tip = 0;
-
-  if (bill > 0) {
-    const totalPercentage = (mySatisfaction + friendSatisfaction) / 100;
-
-    console.log(totalPercentage);
-    tip = bill * totalPercentage;
-    totalBill = bill + tip;
-    console.log(totalBill);
-  }
+  const tip = (bill * (mySatisfaction + friendSatisfaction)) / 2 / 100;
 
   function handleReset() {
-    setBill(0);
+    setBill("");
     setMySatisfaction(0);
     setMyFriendSatisfaction(0);
   }
@@ -50,7 +40,7 @@ export default function App() {
       </Satisfaction>
       {bill > 0 && (
         <h2>
-          You pay {totalBill} ({bill + " + " + tip})
+          You pay {bill + tip} ({bill + " + " + tip})
         </h2>
       )}
       <button onClick={handleReset}>Reset</button>
