@@ -41,6 +41,16 @@ export default function App(){
     setShowAddFriend(false);
   }
 
+  function handleSplitBill(bill){
+    setFriends(friends => 
+      friends.map(friend => 
+        friend.id === selectedFriend.id ? {...friend, balance: friend.balance + bill}  : friend
+      )
+    );
+
+    setSelectedFriend(null);
+  }
+
   return <div className="app">
     <div className="sidebar">
       <FriendList friends={friends} onSelection={handleSelection} selectedFriend={selectedFriend}/>
@@ -48,7 +58,7 @@ export default function App(){
       <Button onClick={handleShowAddFriend}>{showAddFriend ? "Close" : "Add friend"}</Button>
     </div>
 
-    { selectedFriend && <FormSplitBill selectedFriend={selectedFriend}/>}
+    { selectedFriend && <FormSplitBill selectedFriend={selectedFriend} onSplitBill={handleSplitBill} />}
   </div>;
 }
 
@@ -117,15 +127,30 @@ function FormAndFriend({ onAddFriend }) {
   </form>
 }
 
-function FormSplitBill({ selectedFriend }){
+function FormSplitBill({ selectedFriend, onSplitBill }){
 
   const [bill, setBill] = useState("");
   const [paidByUser, setPaidByUser] = useState("");
   const [whoIsPaying, setWhoIsPaying] = useState("user");
   const paidByFriend = bill ? bill - paidByUser : "";
 
+  function handleSubmit(e){
+    e.preventDefault();
+    if(!bill || !paidByUser) return;
+    onSplitBill(whoIsPaying === "user" ? paidByFriend : -paidByUser)
+    
+    // if(whoIsPaying === "user"){
+    //   selectedFriend.balance = selectedFriend.balance + paidByUser;
+    //   setBill("");
+    //   setPaidByUser("");
+    //   setWhoIsPaying("user");
+    // } else {
+    //   selectedFriend.balance = selectedFriend.balance - paidByUser;
+    // }
+  }
+
   return (
-    <form className="form-split-bill">
+    <form className="form-split-bill" onSubmit={handleSubmit}>
       <h2>Split a bill with {selectedFriend.name}</h2>
       <label>Bill value</label>
       <input type="text" value={bill} onChange={(e) => setBill(e.target.value)} />
@@ -141,6 +166,8 @@ function FormSplitBill({ selectedFriend }){
         <option value="user">You</option>
         <option value="friend">{selectedFriend.name}</option>
       </select>
+
+      <Button type="submit">Split Bill</Button>
     </form>
   )
 }
