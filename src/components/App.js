@@ -5,6 +5,9 @@ import Loading from "./Loader";
 import ErrorMessage from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NextButton from "./NextButton";
+import Progress from "./Progress";
+import FinishScreen from "./FinishScreen";
 
 const initialState = {
   questions: [],
@@ -12,6 +15,7 @@ const initialState = {
   currentQuestionIndex: 0,
   answer: null,
   points: 0,
+  highscore: 0,
 };
 
 function reducer(state, action) {
@@ -23,16 +27,49 @@ function reducer(state, action) {
     case "start":
       return { ...state, status: "active" };
     case "newAnswer":
-      return { ...state, answer: action.payload, points: state.points + (action.payload === state.questions[state.currentQuestionIndex].correctOption ? state.questions[state.currentQuestionIndex].points : 0) };
+      return {
+        ...state,
+        answer: action.payload,
+        points:
+          state.points +
+          (action.payload ===
+          state.questions[state.currentQuestionIndex].correctOption
+            ? state.questions[state.currentQuestionIndex].points
+            : 0),
+      };
+    case "nextQuestion":
+      return {
+        ...state,
+        currentQuestionIndex: state.currentQuestionIndex + 1,
+        answer: null,
+      };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highscore: Math.max(state.highscore, state.points),
+      };
+    case "restart":
+      return {
+        ...state,
+        status: "ready",
+        currentQuestionIndex: 0,
+        answer: null,
+        points: 0,
+        highscore: 0,
+      };
     default:
       throw new Error("Unknown action type");
   }
 }
 
 export default function App() {
-  const [{ questions, status, currentQuestionIndex, answer }, dispatch] =
-    useReducer(reducer, initialState);
+  const [
+    { questions, status, currentQuestionIndex, answer, points, highscore },
+    dispatch,
+  ] = useReducer(reducer, initialState);
   const numberOfQuestions = questions.length;
+  const maxPossiblePoints = questions.reduce((pre, cur) => pre + cur.points, 0);
 
   useEffect(() => {
     fetch("http://localhost:8000/questions")
@@ -54,10 +91,33 @@ export default function App() {
           />
         )}
         {status === "active" && (
-          <Question
-            question={questions[currentQuestionIndex]}
+          <>
+            <Progress
+              currentQuestionIndex={currentQuestionIndex}
+              numberOfQuestions={numberOfQuestions}
+              points={points}
+              maxPossiblePoints={maxPossiblePoints}
+              answer={answer}
+            />
+            <Question
+              question={questions[currentQuestionIndex]}
+              dispatch={dispatch}
+              answer={answer}
+            />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              currentQuestionIndex={currentQuestionIndex}
+              numberOfQuestions={numberOfQuestions}
+            />
+          </>
+        )}
+        {status === "finished" && (
+          <FinishScreen
+            points={points}
+            maxPossiblePoints={maxPossiblePoints}
+            highscore={highscore}
             dispatch={dispatch}
-            answer={answer}
           />
         )}
       </Main>
