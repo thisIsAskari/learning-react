@@ -8,6 +8,7 @@ function createRandomPost() {
   };
 }
 
+
 // 1- CREATE A NEW CONTEXT
 const PostContext = createContext();
 
