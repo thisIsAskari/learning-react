@@ -1,14 +1,19 @@
 import Spinner from "./Spinner";
 import styles from "./CityList.module.css";
 import CityItem from "./CityItem";
+import { useCitiesContext } from "../contexts/CitiesContext";
 
-function CityList({ cities, isLoading }) {
+function CityList() {
+  const { cities, isLoading } = useCitiesContext();
+
   if (isLoading) {
     return <Spinner />;
   }
 
   if (cities.length === 0) {
-    return <Message className={styles.noCities} message="No cities added yet." />;
+    return (
+      <Message className={styles.noCities} message="No cities added yet." />
+    );
   }
 
   return (
