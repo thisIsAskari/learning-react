@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./CityItem.module.css";
+import { useCitiesContext } from "../contexts/CitiesContext";
 
 const formatDate = (dateString) => {
   return new Intl.DateTimeFormat("en", {
@@ -10,13 +11,14 @@ const formatDate = (dateString) => {
 };
 
 function CityItem({ city }) {
+  const { currentCity } = useCitiesContext();
   const { cityName, emoji, date, id, position } = city;
 
   return (
     <li>
       <Link
         to={`/app/cities/${id}?lat=${position.lat}&lng=${position.lng}`}
-        className={styles.cityItem}
+        className={`${styles.cityItem} ${currentCity.id === id ? styles["cityItem--active"] : ""}`}
       >
         <span className={styles.emoji}>{emoji}</span>
         <h3 className={styles.name}>{cityName}</h3>
