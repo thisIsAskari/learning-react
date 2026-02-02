@@ -27,7 +27,9 @@ function CitiesContextProvider({ children }) {
   }, []);
 
   return (
-    <CitiesContext.Provider value={{ cities, isLoading, currentCity, getCity, createCity }}>
+    <CitiesContext.Provider
+      value={{ cities, isLoading, currentCity, getCity, createCity, deleteCity }}
+    >
       {children}
     </CitiesContext.Provider>
   );
@@ -63,11 +65,25 @@ async function createCity(newCity) {
       // setCurrentCity(data);
       setCities((prevCities) => [...prevCities, data]);
     } catch (error) {
-      console.error("Error fetching cities:", error);
+      console.error("Error creating city:", error);
     } finally {
       setIsLoading(false);
     }
   };
+}
+
+async function deleteCity(id) {
+  try {
+    setIsLoading(true);
+    await fetch(`${BASE_URL}/cities/${id}`, {
+      method: "DELETE",
+    });
+    setCities((prevCities) => prevCities.filter((city) => city.id !== id));
+  } catch (error) {
+    console.error("Error deleting city:", error);
+  } finally {
+    setIsLoading(false);
+  }
 }
 
 function useCitiesContext() {
