@@ -27,7 +27,7 @@ function CitiesContextProvider({ children }) {
   }, []);
 
   return (
-    <CitiesContext.Provider value={{ cities, isLoading, currentCity, getCity }}>
+    <CitiesContext.Provider value={{ cities, isLoading, currentCity, getCity, createCity }}>
       {children}
     </CitiesContext.Provider>
   );
@@ -40,6 +40,28 @@ async function getCity(id) {
       const response = await fetch(`${BASE_URL}/cities/${id}`);
       const data = await response.json();
       setCurrentCity(data);
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+}
+
+async function createCity(newCity) {
+  const fetchCities = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${BASE_URL}/cities`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newCity),
+      });
+      const data = await response.json();
+      // setCurrentCity(data);
+      setCities((prevCities) => [...prevCities, data]);
     } catch (error) {
       console.error("Error fetching cities:", error);
     } finally {
